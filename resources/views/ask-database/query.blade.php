@@ -1,19 +1,34 @@
 @php
-// Import the helper function and necessary classes
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
-// Define models and their corresponding classes
-$models = [
-    'Lead' => \App\Models\Lead::class,
-    'Customer' => \App\Models\Customer::class,
-];
+// Automatically detect all models in the `app/Models` directory
+$models = [];
+$path = app_path('Models');
+$files = File::allFiles($path);
+
+foreach ($files as $file) {
+    $namespace = "App\\Models\\";
+    $className = $namespace . Str::replaceLast('.php', '', $file->getFilename());
+    
+    if (class_exists($className)) {
+        $models[basename($file->getFilename(), '.php')] = $className;
+    }
+}
 
 // Initialize an array to hold table schemas
 $tableSchemas = [];
 foreach ($models as $name => $modelClass) {
-    // Use the helper function to fetch table schema dynamically
-    $tableSchemas[$name] = getTableSchema($modelClass);
+    $modelInstance = app($modelClass);
+    $table = $modelInstance->getTable();
+    $columns = Schema::getColumnListing($table);
+    $tableSchemas[$name] = ['table' => $table, 'columns' => $columns];
 }
+@endphp
+@php
+// Log the detected models for debugging
+\Log::info('Detected Models:', $models);
 @endphp
 
 ---
