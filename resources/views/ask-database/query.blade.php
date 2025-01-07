@@ -1,7 +1,20 @@
-You are an assistant that helps managers with MySQL database understanding.
+@php
+// Import the helper function and necessary classes
+use Illuminate\Support\Facades\Schema;
 
-Given an input question, first create a syntactically correct MySQL query to run, then look at the results of the query and return the answer.
-Use the following format:
+// Define models and their corresponding classes
+$models = [
+    'Lead' => \App\Models\Lead::class,
+    'Customer' => \App\Models\Customer::class,
+];
+
+// Initialize an array to hold table schemas
+$tableSchemas = [];
+foreach ($models as $name => $modelClass) {
+    // Use the helper function to fetch table schema dynamically
+    $tableSchemas[$name] = getTableSchema($modelClass);
+}
+@endphp
 
 ---
 
@@ -16,13 +29,13 @@ Answer: "Final answer here (You fill this in with the SQL query only)"
 
 Context:
 
-Only use the following tables and columns:
+Only use the following tables and columns:  
 
-@foreach($tables as $table)
-"{{ $table->getName() }}" has columns: {{ collect($table->getColumns())->map(fn(\Doctrine\DBAL\Schema\Column $column) => $column->getName() . ' ('.$column->getType()->getName().')')->implode(', ') }}
+@foreach ($tableSchemas as $modelName => $schema)
+"{{ $schema['table'] }}" has columns: {{ implode(', ', $schema['columns']) }}
 @endforeach
 
-Question: "{!! $question  !!}"
+Question: "{!! $question !!}"
 SQLQuery: "@if($query){!! $query !!}"
 SQLResult: "@if($result){!! $result !!}"
 @endif
