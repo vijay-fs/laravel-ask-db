@@ -26,11 +26,6 @@ foreach ($models as $name => $modelClass) {
     $tableSchemas[$name] = ['table' => $table, 'columns' => $columns];
 }
 @endphp
-@php
-// Log the detected models for debugging
-\Log::info('Detected Models:', $models);
-@endphp
-
 ---
 
 Guidelines:
@@ -57,6 +52,8 @@ SQLResult: "@if($result){!! $result !!}"
 @endif
 
 @if($query)
+    SQLQuery: "{{ $query }}"
+    SQLResult: "{{ json_encode($result, JSON_PRETTY_PRINT) }}"
     Answer: "
 @else
 (Your answer HERE must be a syntactically correct MySQL query with no extra information or quotes. Omit SQLQuery: from your answer)
