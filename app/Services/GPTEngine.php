@@ -57,7 +57,7 @@ class GPTEngine
     protected function queryOpenAi(string $prompt, string $stop, float $temperature = 0.0)
     {
         $completions = $this->client->chat()->create([
-            'model' => 'gpt-4-1106-preview',
+            'model' => 'gpt-4o',
             'messages' => [
                 [
                     'role' => 'system',
